@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,35 +6,27 @@ const BirthdayLanding = () => {
   const [noPosition, setNoPosition] = useState({ x: 0, y: 0 });
   const navigate = useNavigate(); 
   
-  // 1. Create a reference for the audio element
+  // Audio references
   const audioRef = useRef(null);
+  const [hasAudioStarted, setHasAudioStarted] = useState(false);
 
-  // 2. Try to autoplay, and add a click listener as a fallback
+  // 1. Attempt standard autoplay first (works sometimes depending on browser history)
   useEffect(() => {
-    const playAudio = async () => {
-      try {
-        if (audioRef.current) {
-          await audioRef.current.play();
-        }
-      } catch (error) {
-        console.log("Autoplay blocked by browser. Waiting for user interaction.");
-        
-        // If blocked, wait for her to click ANYWHERE on the page, then play the music
-        const playOnFirstClick = () => {
-          if (audioRef.current) {
-            audioRef.current.play();
-          }
-          window.removeEventListener('click', playOnFirstClick);
-          window.removeEventListener('touchstart', playOnFirstClick);
-        };
-
-        window.addEventListener('click', playOnFirstClick);
-        window.addEventListener('touchstart', playOnFirstClick);
-      }
-    };
-
-    playAudio();
+    if (audioRef.current) {
+      audioRef.current.play()
+        .then(() => setHasAudioStarted(true))
+        .catch(() => console.log("Autoplay blocked. Waiting for user tap."));
+    }
   }, []);
+
+  // 2. The foolproof fallback: Trigger audio on ANY tap/click on the screen
+  const handlePageInteraction = () => {
+    if (!hasAudioStarted && audioRef.current) {
+      audioRef.current.play()
+        .then(() => setHasAudioStarted(true))
+        .catch((err) => console.error("Playback failed:", err));
+    }
+  };
 
   // Function to make the "No" button run away
   const handleNoHover = () => {
@@ -43,17 +35,19 @@ const BirthdayLanding = () => {
     setNoPosition({ x: randomX, y: randomY });
   };
 
-  // Update the click handler to use navigate
   const handleYesClick = () => {
     navigate('/selection'); 
   };
 
   return (
-    <div className="min-h-screen bg-[#ffe9ec] font-sans flex flex-col items-center justify-center relative overflow-hidden text-center p-4">
+    // 3. We added onClick={handlePageInteraction} to the main wrapper
+    <div 
+      onClick={handlePageInteraction}
+      className="min-h-screen bg-[#ffe9ec] font-sans flex flex-col items-center justify-center relative overflow-hidden text-center p-4 cursor-pointer"
+    >
       
-      {/* 3. The Audio Element (Hidden) */}
-      {/* REMEMBER: Change "your-song.ogg" to the exact name of your file in the public folder */}
-      <audio ref={audioRef} src="/telegram_audio.ogg" loop hidden />
+      {/* The Audio Element */}
+      <audio ref={audioRef} src="/your-song.ogg" loop hidden />
 
       {/* Hanging Hearts Decoration */}
       <div className="absolute top-0 left-6 md:left-24 flex space-x-6">
@@ -69,19 +63,19 @@ const BirthdayLanding = () => {
       </div>
 
       {/* Cute Center Image */}
-      <div className="mb-6 z-10">
+      <div className="mb-6 z-10 pointer-events-none">
         <img 
-          src="/cate-removebg-preview.png" 
+          src="https://media.tenor.com/7s1H-r76g7cAAAAi/mochi-peach-cat.gif" 
           alt="Cute blushing cat" 
           className="w-56 h-56 object-cover mx-auto mix-blend-multiply"
         />
       </div>
 
       {/* Text Elements */}
-      <h2 className="text-[#d97382] text-xl font-bold mb-2 tracking-wide">
+      <h2 className="text-[#d97382] text-xl font-bold mb-2 tracking-wide pointer-events-none">
         Hey beautiful
       </h2>
-      <h1 className="text-[#b23b4e] text-4xl md:text-5xl font-extrabold mb-12 drop-shadow-sm">
+      <h1 className="text-[#b23b4e] text-4xl md:text-5xl font-extrabold mb-12 drop-shadow-sm pointer-events-none">
         Do you want to see your gift?
       </h1>
 
