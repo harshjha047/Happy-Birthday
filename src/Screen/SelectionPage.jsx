@@ -1,17 +1,30 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 const SelectionPage = () => {
-    const navigate =useNavigate()
+    const navigate = useNavigate();
+    
+    // 1. Create a reference for the audio player
+    const audioRef = useRef(null);
+
+    // 2. Play the audio automatically when this page loads
+    useEffect(() => {
+        if (audioRef.current) {
+            // Since she already clicked "Yes" on the previous page, 
+            // the browser will allow this to play immediately!
+            audioRef.current.play().catch((err) => {
+                console.error("Audio playback failed:", err);
+            });
+        }
+    }, []);
+
     const handleGalleryClick = () => {
         navigate('/gallery');
     };
 
     const handleLetterClick = () => {
-        navigate('/latter');
-
-        // Add logic to show letter
+        navigate('/latter'); // Make sure this matches your route spelling!
     };
 
     // Card Animation Variants
@@ -21,7 +34,11 @@ const SelectionPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#ffe9ec] font-sans flex flex-col items-center justify-center p-4">
+        <div className="min-h-screen bg-[#ffe9ec] font-sans flex flex-col items-center justify-center p-4 relative">
+            
+            {/* 3. The Audio Element */}
+            {/* Make sure to change "your-song.ogg" to your actual file name */}
+            <audio ref={audioRef} src="/telegram_audio.ogg" loop hidden />
 
             {/* Header Text */}
             <motion.div
@@ -38,7 +55,7 @@ const SelectionPage = () => {
             </motion.div>
 
             {/* Grid Container */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-2xl w-full px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-2xl w-full px-4 relative z-10">
 
                 {/* 1. Photo Gallery Card */}
                 <motion.div
@@ -73,9 +90,6 @@ const SelectionPage = () => {
                         <path d="M12 14.5l-2-2a2.8 2.8 0 1 1 4-4 2.8 2.8 0 0 1 4 4l-6 6-6-6a2.8 2.8 0 1 1 4-4 2.8 2.8 0 0 1 4 4l-2 2z" fill="#ff748e" stroke="none" />
                     </svg>
                 </motion.div>
-
-                {/* 3. Decorative Bow Card (To match image) */}
-
 
             </div>
         </div>
