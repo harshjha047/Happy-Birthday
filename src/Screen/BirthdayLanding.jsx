@@ -47,7 +47,7 @@ const BirthdayLanding = () => {
     >
       
       {/* The Audio Element */}
-      <audio ref={audioRef} src="/your-song.ogg" loop hidden />
+      <audio ref={audioRef} src="/telegram_audio.ogg" loop hidden />
 
       {/* Hanging Hearts Decoration */}
       <div className="absolute top-0 left-6 md:left-24 flex space-x-6">
@@ -65,7 +65,7 @@ const BirthdayLanding = () => {
       {/* Cute Center Image */}
       <div className="mb-6 z-10 pointer-events-none">
         <img 
-          src="https://media.tenor.com/7s1H-r76g7cAAAAi/mochi-peach-cat.gif" 
+          src="/cate-removebg-preview.png" 
           alt="Cute blushing cat" 
           className="w-56 h-56 object-cover mx-auto mix-blend-multiply"
         />
